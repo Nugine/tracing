@@ -700,6 +700,22 @@ where
         }
     }
 
+    /// Sets whether or not the file of an event's callsite is displayed.
+    pub fn with_file(self, display_file: bool) -> CollectorBuilder<N, format::Format<L, T>, F, W> {
+        CollectorBuilder {
+            filter: self.filter,
+            inner: self.inner.with_file(display_file),
+        }
+    }
+
+    /// Sets whether or not the line of an event's callsite is displayed.
+    pub fn with_line(self, display_line: bool) -> CollectorBuilder<N, format::Format<L, T>, F, W> {
+        CollectorBuilder {
+            filter: self.filter,
+            inner: self.inner.with_line(display_line),
+        }
+    }
+
     /// Sets whether or not the [name] of the current thread is displayed
     /// when formatting events
     ///

@@ -186,6 +186,8 @@ pub struct Format<F = Full, T = SystemTime> {
     pub(crate) display_level: bool,
     pub(crate) display_thread_id: bool,
     pub(crate) display_thread_name: bool,
+    pub(crate) display_file: bool,
+    pub(crate) display_line: bool,
 }
 
 impl Default for Format<Full, SystemTime> {
@@ -198,6 +200,8 @@ impl Default for Format<Full, SystemTime> {
             display_level: true,
             display_thread_id: false,
             display_thread_name: false,
+            display_file: false,
+            display_line: false,
         }
     }
 }
@@ -215,6 +219,8 @@ impl<F, T> Format<F, T> {
             display_level: self.display_level,
             display_thread_id: self.display_thread_id,
             display_thread_name: self.display_thread_name,
+            display_file: false,
+            display_line: false,
         }
     }
 
@@ -234,6 +240,8 @@ impl<F, T> Format<F, T> {
             display_level: self.display_level,
             display_thread_id: self.display_thread_id,
             display_thread_name: self.display_thread_name,
+            display_file: false,
+            display_line: false,
         }
     }
 
@@ -263,6 +271,8 @@ impl<F, T> Format<F, T> {
             display_level: self.display_level,
             display_thread_id: self.display_thread_id,
             display_thread_name: self.display_thread_name,
+            display_file: false,
+            display_line: false,
         }
     }
 
@@ -285,6 +295,8 @@ impl<F, T> Format<F, T> {
             display_level: self.display_level,
             display_thread_id: self.display_thread_id,
             display_thread_name: self.display_thread_name,
+            display_file: false,
+            display_line: false,
         }
     }
 
@@ -298,6 +310,8 @@ impl<F, T> Format<F, T> {
             display_level: self.display_level,
             display_thread_id: self.display_thread_id,
             display_thread_name: self.display_thread_name,
+            display_file: false,
+            display_line: false,
         }
     }
 
@@ -318,6 +332,22 @@ impl<F, T> Format<F, T> {
     pub fn with_level(self, display_level: bool) -> Format<F, T> {
         Format {
             display_level,
+            ..self
+        }
+    }
+
+    /// Sets whether or not the file of an event's callsite is displayed.
+    pub fn with_file(self, display_file: bool) -> Format<F, T> {
+        Format {
+            display_file,
+            ..self
+        }
+    }
+
+    /// Sets whether or not the line of an event's callsite is displayed.
+    pub fn with_line(self, display_line: bool) -> Format<F, T> {
+        Format {
+            display_line,
             ..self
         }
     }
@@ -431,6 +461,14 @@ where
         time::write(&self.timer, writer)?;
 
         self.format_level(*meta.level(), writer)?;
+
+        if let (true, Some(file)) = (self.display_file, meta.file()) {
+            if let (true, Some(line)) = (self.display_line, meta.line()) {
+                write!(writer, "{}:{} ", file, line)?;
+            } else {
+                write!(writer, "{} ", file)?;
+            }
+        }
 
         if self.display_thread_name {
             let current_thread = std::thread::current();

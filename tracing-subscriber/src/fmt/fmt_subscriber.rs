@@ -328,6 +328,28 @@ where
         }
     }
 
+    /// Sets whether or not the file of an event's callsite is displayed.
+    pub fn with_file(self, display_file: bool) -> Subscriber<S, N, format::Format<L, T>, W> {
+        Subscriber {
+            fmt_event: self.fmt_event.with_file(display_file),
+            fmt_fields: self.fmt_fields,
+            fmt_span: self.fmt_span,
+            make_writer: self.make_writer,
+            _inner: self._inner,
+        }
+    }
+
+    /// Sets whether or not the line of an event's callsite is displayed.
+    pub fn with_line(self, display_line: bool) -> Subscriber<S, N, format::Format<L, T>, W> {
+        Subscriber {
+            fmt_event: self.fmt_event.with_line(display_line),
+            fmt_fields: self.fmt_fields,
+            fmt_span: self.fmt_span,
+            make_writer: self.make_writer,
+            _inner: self._inner,
+        }
+    }
+
     /// Sets the subscriber being built to use a [less verbose formatter](../fmt/format/struct.Compact.html).
     pub fn compact(self) -> Subscriber<S, N, format::Format<format::Compact, T>, W>
     where
